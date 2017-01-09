@@ -74,8 +74,13 @@ def lambda_handler(event, context):
             time.sleep(60)
 
 #Assign the EIP to the instance
-        ec2_client.associate_address(InstanceId=instanceID,AllocationId=eip['AllocationId'],AllowReassociation=True)
-        print(eip['PublicIp'])
+        try:
+            ec2_client.associate_address(InstanceId=instanceID,AllocationId=eip['AllocationId'],AllowReassociation=True)
+            print(eip['PublicIp'])
+        except:
+            ec2_client.terminate_instances(InstanceIds=[instanceID])
+            ec2_client.release_address(AllocationId=eip['AllocationId'])
+            print("Failed to associate address to instance, terminating all resources")
 
 #Tag the instance with VPNServer
         ec2_client.create_tags(Resources=[instanceID],Tags=[{'Key':'Name','Value':'VPNServer'}])
