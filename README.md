@@ -18,10 +18,10 @@ CloudFormation Templates are forthcoming but for now here's the install process:
   AMI_ID = The AMI of the instance you want to launch. All testing was done with the Amazon Linux AMI
   SECURITY_GROUP_ID = The SecurityGroupID you created in step 2.
   INSTANCE_TYPE = The type of instance to use. t2.nano or t2.micro should work fine
-  KEY_NAME = The name of the key you created in step 6. 
-  
- 9. Create a new IOT device following Amazon's setup instructions for the IOT button
- 10. Create a rule for the IOT button to the Lambda function you created in step 8.
- 
+  KEY_NAME = The name of the key you created in step 6.   
+9. Create a new IOT device following Amazon's setup instructions for the IOT button
+10. Create a rule for the IOT button to the Lambda function you created in step 8.
+11. Create a Lambda function with the following environment variables populated with your values. Set up a trigger for the S3 bucket for keys you created in step 5. The trigger should be on Object PUT operations
+   SNS_TOPIC_ARN = The TopicARN you created in step 3
  
  Enjoy VPN goodness
