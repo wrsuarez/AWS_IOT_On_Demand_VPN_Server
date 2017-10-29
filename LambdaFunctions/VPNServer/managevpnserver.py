@@ -85,7 +85,27 @@ def lambda_handler(event, context):
 #Tag the instance with VPNServer
         ec2_client.create_tags(Resources=[instanceID],Tags=[{'Key':'Name','Value':'VPNServer'}])
 
+#Optionally use a DNS Record for the static IP eliminating the need to change your VPN client config each time the serveris provisioned
+
+        if os.environ['HOSTED_ZONE_ID']:
+            route53_client = boto3.client('route53')
+            route53_client.change_resource_record_sets(
+                HostedZoneId = os.environ['HOSTED_ZONE_ID'],
+                ChangeBatch = {
+                    'Changes' : [
+                        {
+                            'Action' : 'UPSERT',
+                            'ResourceRecordSet' : {
+                                'Name' : os.environ['DNS_NAME'],
+                                'Type' : 'A',
+
+                            }
+                        }
+                    ]
+                }
+            )
+
 #Notify me the VPN Server is up and send me the public IP
         sns_client = boto3.client('sns')
-        sns_client.publish(TopicArn=os.environ['SNS_TOPIC_ARN'],Message="VPN IP: " + eip['PublicIp'])
+        sns_client.publish(TopicArn=os.environ['SNS_TOPIC_ARN'],Message="VPN IP: " + eip['PublicIp'] + "DNS Name: " + os.environ['DNS_NAME'])
 
